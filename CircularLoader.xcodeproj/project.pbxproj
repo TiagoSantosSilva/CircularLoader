@@ -12,6 +12,7 @@
 		277F79CE2007D2F4007AC302 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 277F79CC2007D2F4007AC302 /* Main.storyboard */; };
 		277F79D02007D2F4007AC302 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 277F79CF2007D2F4007AC302 /* Assets.xcassets */; };
 		277F79D32007D2F4007AC302 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 277F79D12007D2F4007AC302 /* LaunchScreen.storyboard */; };
+		277F79DC200817B7007AC302 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277F79DB200817B7007AC302 /* UIColorExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		277F79CF2007D2F4007AC302 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		277F79D22007D2F4007AC302 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		277F79D42007D2F4007AC302 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		277F79DB200817B7007AC302 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		277F79C72007D2F4007AC302 /* CircularLoader */ = {
 			isa = PBXGroup;
 			children = (
+				277F79DA200817A1007AC302 /* Extensions */,
 				277F79C82007D2F4007AC302 /* AppDelegate.swift */,
 				277F79CA2007D2F4007AC302 /* ViewController.swift */,
 				277F79CC2007D2F4007AC302 /* Main.storyboard */,
@@ -62,6 +65,14 @@
 				277F79D42007D2F4007AC302 /* Info.plist */,
 			);
 			path = CircularLoader;
+			sourceTree = "<group>";
+		};
+		277F79DA200817A1007AC302 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				277F79DB200817B7007AC302 /* UIColorExtension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +149,7 @@
 			files = (
 				277F79CB2007D2F4007AC302 /* ViewController.swift in Sources */,
 				277F79C92007D2F4007AC302 /* AppDelegate.swift in Sources */,
+				277F79DC200817B7007AC302 /* UIColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

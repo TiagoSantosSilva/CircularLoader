@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     let percentageLabel: UILabel = {
         let label = UILabel()
         label.text = "Start"
+        label.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 32)
         return label
@@ -26,7 +27,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // view.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+        view.backgroundColor = UIColor.backgroundColor
+        
         createShapeLayers()
         configurePercentageLabel()
     }
@@ -41,9 +43,9 @@ class ViewController: UIViewController {
     fileprivate func createShapeLayers() {
         let circularPath = UIBezierPath(arcCenter: .zero, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
-        trackLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1), fillColor: UIColor.clear.cgColor, strokeEnd: 1)
-        pulsatingLayer = createProgressCircle(circularPath, strokeColor: UIColor.clear.cgColor, fillColor: #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1), strokeEnd: 1)
-        progressShapeLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1), fillColor: UIColor.clear.cgColor, strokeEnd: 0)
+        pulsatingLayer = createProgressCircle(circularPath, strokeColor: UIColor.clear.cgColor, fillColor: UIColor.pulsatingFillColor.cgColor, strokeEnd: 1)
+        trackLayer = createProgressCircle(circularPath, strokeColor: UIColor.trackStrokeColor.cgColor, fillColor: UIColor.backgroundColor.cgColor, strokeEnd: 1)
+        progressShapeLayer = createProgressCircle(circularPath, strokeColor: UIColor.outlineStrokeColor.cgColor, fillColor: UIColor.clear.cgColor, strokeEnd: 0)
         
         animatePulsatingLayer()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
@@ -66,7 +68,7 @@ class ViewController: UIViewController {
         shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = strokeColor
         shapeLayer.fillColor = fillColor
-        shapeLayer.lineWidth = 10
+        shapeLayer.lineWidth = 20
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.strokeEnd = strokeEnd
         shapeLayer.position = view.center
