@@ -12,11 +12,12 @@ class ViewController: UIViewController {
     
     let downloadUrl = "https://firebasestorage.googleapis.com/v0/b/firestorechat-e64ac.appspot.com/o/intermediate_training_rec.mp4?alt=media&token=e20261d0-7219-49d2-b32d-367e1606500c"
     
-    var progressShapeLayer: CAShapeLayer!
     var trackLayer: CAShapeLayer!
-    var pulsatingLayer: CAShapeLayer!
-    var percentageLabel: UILabel!
-    var completedLabel: UILabel!
+    
+    var progressShapeLayersList = [CAShapeLayer]()
+    var pulsatingLayersList = [CAShapeLayer]()
+    var downloadCompletedLabelsList = [UILabel]()
+    var downloadPercentageLabelsList = [UILabel]()
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -27,8 +28,8 @@ class ViewController: UIViewController {
         view.backgroundColor = UIColor.backgroundColor
         
         setupNotificationObservers()
-        createShapeLayers()
-        setupLabels()
+        createShapeLayers(outlineStrokecolor: UIColor.outlineRedStrokeColor, trackStrokeColor: UIColor.trackRedStrokeColor, pulsatingFillColor: UIColor.pulsatingRedFillColor, yPositionVariant: -160)
+        createShapeLayers(outlineStrokecolor: UIColor.outlineBlueStrokeColor, trackStrokeColor: UIColor.trackBlueStrokeColor, pulsatingFillColor: UIColor.pulsatingBlueFillColor, yPositionVariant: 160)
     }
     
     private func setupNotificationObservers() {
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
     }
     
     @objc func handleEnterForeground() {
-        animatePulsatingLayer()
+        animatePulsatingLayers()
     }
     
     fileprivate func createLabel(forLabelText labelText: String, andLabelFontSize fontSize: CGFloat) -> UILabel {
@@ -48,46 +49,56 @@ class ViewController: UIViewController {
         return label
     }
     
-    fileprivate func setupLabels() {
+    fileprivate func setupLabels(yPositionVariant: CGFloat) {
         
-        percentageLabel = createLabel(forLabelText: "Start", andLabelFontSize: 32)
-        completedLabel = createLabel(forLabelText: "Completed", andLabelFontSize: 16)
+        let percentageLabel = createLabel(forLabelText: "Start", andLabelFontSize: 32)
+        let completedLabel = createLabel(forLabelText: "Completed", andLabelFontSize: 16)
         
         percentageLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        percentageLabel.center = view.center
+        percentageLabel.center = CGPoint(x: view.center.x, y: view.center.y + yPositionVariant)
         
         completedLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         completedLabel.center = CGPoint(x: percentageLabel.center.x, y: percentageLabel.center.y + 30)
         completedLabel.isHidden = true
         
+        downloadPercentageLabelsList.append(percentageLabel)
+        downloadCompletedLabelsList.append(completedLabel)
+        
         view.addSubview(percentageLabel)
         view.addSubview(completedLabel)
     }
     
-    fileprivate func createShapeLayers() {
+    fileprivate func createShapeLayers(outlineStrokecolor: UIColor, trackStrokeColor: UIColor, pulsatingFillColor: UIColor, yPositionVariant: CGFloat) {
         let circularPath = UIBezierPath(arcCenter: .zero, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
-        pulsatingLayer = createProgressCircle(circularPath, strokeColor: UIColor.clear.cgColor, fillColor: UIColor.pulsatingFillColor.cgColor, strokeEnd: 1)
-        trackLayer = createProgressCircle(circularPath, strokeColor: UIColor.trackStrokeColor.cgColor, fillColor: UIColor.backgroundColor.cgColor, strokeEnd: 1)
-        progressShapeLayer = createProgressCircle(circularPath, strokeColor: UIColor.outlineStrokeColor.cgColor, fillColor: UIColor.clear.cgColor, strokeEnd: 0)
+        let pulsatingLayer = createProgressCircle(circularPath, strokeColor: UIColor.clear.cgColor, fillColor: pulsatingFillColor.cgColor, strokeEnd: 1, yPositionVariant: yPositionVariant)
+        trackLayer = createProgressCircle(circularPath, strokeColor: trackStrokeColor.cgColor, fillColor: UIColor.backgroundColor.cgColor, strokeEnd: 1, yPositionVariant: yPositionVariant)
+        let progressShapeLayer = createProgressCircle(circularPath, strokeColor: outlineStrokecolor.cgColor, fillColor: UIColor.clear.cgColor, strokeEnd: 0, yPositionVariant: yPositionVariant)
         
-        animatePulsatingLayer()
+        progressShapeLayersList.append(progressShapeLayer)
+        pulsatingLayersList.append(pulsatingLayer)
+        
+        setupLabels(yPositionVariant: yPositionVariant)
+        
+        animatePulsatingLayers()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
     
-    func animatePulsatingLayer() {
-        let animation = CABasicAnimation(keyPath: "transform.scale")
-        
-        animation.toValue = 1.5
-        animation.duration = 0.8
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        animation.autoreverses = true
-        animation.repeatCount = Float.infinity
-        
-        pulsatingLayer.add(animation, forKey: "pulsing")
+    func animatePulsatingLayers() {
+        for pulsatingLayer in pulsatingLayersList {
+            let animation = CABasicAnimation(keyPath: "transform.scale")
+            
+            animation.toValue = 1.5
+            animation.duration = 0.8
+            animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+            animation.autoreverses = true
+            animation.repeatCount = Float.infinity
+            
+            pulsatingLayer.add(animation, forKey: "pulsing")
+        }
     }
     
-    fileprivate func createProgressCircle(_ circularPath: UIBezierPath, strokeColor: CGColor, fillColor: CGColor, strokeEnd: CGFloat) -> CAShapeLayer {
+    fileprivate func createProgressCircle(_ circularPath: UIBezierPath, strokeColor: CGColor, fillColor: CGColor, strokeEnd: CGFloat, yPositionVariant: CGFloat) -> CAShapeLayer {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = strokeColor
@@ -95,7 +106,7 @@ class ViewController: UIViewController {
         shapeLayer.lineWidth = 20
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.strokeEnd = strokeEnd
-        shapeLayer.position = view.center
+        shapeLayer.position = CGPoint(x: view.center.x, y: view.center.y + yPositionVariant)
         shapeLayer.transform = CATransform3DMakeRotation(-CGFloat.pi / 2, 0, 0, 1)
         
         view.layer.addSublayer(shapeLayer)
@@ -110,8 +121,13 @@ class ViewController: UIViewController {
     private func beginDownloadingFile() {
         print("Attempting to download file.")
         
-        progressShapeLayer.strokeEnd = 0
-        completedLabel.isHidden = true
+        for progressShapeLayer in progressShapeLayersList {
+             progressShapeLayer.strokeEnd = 0
+        }
+        
+        for downloadCompletedLabel in downloadCompletedLabelsList {
+            downloadCompletedLabel.isHidden = true
+        }
         
         let configuration = URLSessionConfiguration.default
         let operationQueue = OperationQueue()
@@ -134,11 +150,19 @@ extension ViewController: URLSessionDownloadDelegate {
         let downloadPercentage = CGFloat(totalBytesWritten) / CGFloat(totalBytesExpectedToWrite)
         
         DispatchQueue.main.async {
-            self.percentageLabel.text = "\(Int(downloadPercentage * 100))%"
-            self.progressShapeLayer.strokeEnd = downloadPercentage
+            
+            for downloadPercentageLabel in self.downloadPercentageLabelsList {
+                downloadPercentageLabel.text = "\(Int(downloadPercentage * 100))%"
+            }
+            
+            for progressShapeLayer in self.progressShapeLayersList {
+                progressShapeLayer.strokeEnd = downloadPercentage
+            }
             
             if downloadPercentage == 1 {
-                self.completedLabel.isHidden = false
+                for completedLabel in self.downloadCompletedLabelsList {
+                    completedLabel.isHidden = false
+                }
             }
         }
     }
