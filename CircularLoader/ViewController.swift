@@ -15,15 +15,8 @@ class ViewController: UIViewController {
     var progressShapeLayer: CAShapeLayer!
     var trackLayer: CAShapeLayer!
     var pulsatingLayer: CAShapeLayer!
-    
-    let percentageLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Start"
-        label.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-        label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 32)
-        return label
-    }()
+    var percentageLabel: UILabel!
+    var completedLabel: UILabel!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -33,15 +26,42 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.backgroundColor
         
+        setupNotificationObservers()
         createShapeLayers()
-        configurePercentageLabel()
+        setupLabels()
     }
     
-    fileprivate func configurePercentageLabel() {
-        view.addSubview(percentageLabel)
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
+    }
+    
+    @objc func handleEnterForeground() {
+        animatePulsatingLayer()
+    }
+    
+    fileprivate func createLabel(forLabelText labelText: String, andLabelFontSize fontSize: CGFloat) -> UILabel {
+        let label = UILabel()
+        label.text = labelText
+        label.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        label.textAlignment = .center
+        label.font = UIFont.boldSystemFont(ofSize: fontSize)
+        return label
+    }
+    
+    fileprivate func setupLabels() {
+        
+        percentageLabel = createLabel(forLabelText: "Start", andLabelFontSize: 32)
+        completedLabel = createLabel(forLabelText: "Completed", andLabelFontSize: 16)
         
         percentageLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         percentageLabel.center = view.center
+        
+        completedLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        completedLabel.center = CGPoint(x: percentageLabel.center.x, y: percentageLabel.center.y + 30)
+        completedLabel.isHidden = true
+        
+        view.addSubview(percentageLabel)
+        view.addSubview(completedLabel)
     }
     
     fileprivate func createShapeLayers() {
@@ -91,6 +111,7 @@ class ViewController: UIViewController {
         print("Attempting to download file.")
         
         progressShapeLayer.strokeEnd = 0
+        completedLabel.isHidden = true
         
         let configuration = URLSessionConfiguration.default
         let operationQueue = OperationQueue()
@@ -115,9 +136,11 @@ extension ViewController: URLSessionDownloadDelegate {
         DispatchQueue.main.async {
             self.percentageLabel.text = "\(Int(downloadPercentage * 100))%"
             self.progressShapeLayer.strokeEnd = downloadPercentage
+            
+            if downloadPercentage == 1 {
+                self.completedLabel.isHidden = false
+            }
         }
-        
-        print(downloadPercentage)
     }
 }
 
