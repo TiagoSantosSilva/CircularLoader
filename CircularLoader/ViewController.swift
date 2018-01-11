@@ -39,25 +39,15 @@ class ViewController: UIViewController {
         return shapeLayer
     }
     
-    fileprivate func animateCircle() {
-        let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
-        basicAnimation.toValue = 1
-        basicAnimation.duration = 2
-        
-        basicAnimation.fillMode = kCAFillModeForwards
-        basicAnimation.isRemovedOnCompletion = false
-        
-        progressShapeLayer.add(basicAnimation, forKey: "urSoBasic")
-    }
-    
     @objc private func handleTap() {
         print("Attempting to animate stroke")
         beginDownloadingFile()
-        animateCircle()
     }
     
     private func beginDownloadingFile() {
         print("Attempting to download file.")
+        
+        progressShapeLayer.strokeEnd = 0
         
         let configuration = URLSessionConfiguration.default
         let operationQueue = OperationQueue()
@@ -76,6 +66,14 @@ extension ViewController: URLSessionDownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         print(totalBytesWritten, totalBytesExpectedToWrite)
+        
+        let downloadPercentage = CGFloat(totalBytesWritten) / CGFloat(totalBytesExpectedToWrite)
+        
+        DispatchQueue.main.async {
+            self.progressShapeLayer.strokeEnd = downloadPercentage
+        }
+        
+        print(downloadPercentage)
     }
 }
 
