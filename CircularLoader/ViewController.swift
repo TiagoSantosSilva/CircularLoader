@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    let downloadUrl = "https://firebasestorage.googleapis.com/v0/b/firestorechat-e64ac.appspot.com/o/intermediate_training_rec.mp4?alt=media&token=e20261d0-7219-49d2-b32d-367e1606500c"
+    
     var progressShapeLayer: CAShapeLayer!
     var trackLayer: CAShapeLayer!
     
@@ -37,9 +39,7 @@ class ViewController: UIViewController {
         return shapeLayer
     }
     
-    @objc private func handleTap() {
-        print("Attempting to animate stroke")
-        
+    fileprivate func animateCircle() {
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
         basicAnimation.toValue = 1
         basicAnimation.duration = 2
@@ -48,6 +48,34 @@ class ViewController: UIViewController {
         basicAnimation.isRemovedOnCompletion = false
         
         progressShapeLayer.add(basicAnimation, forKey: "urSoBasic")
+    }
+    
+    @objc private func handleTap() {
+        print("Attempting to animate stroke")
+        beginDownloadingFile()
+        animateCircle()
+    }
+    
+    private func beginDownloadingFile() {
+        print("Attempting to download file.")
+        
+        let configuration = URLSessionConfiguration.default
+        let operationQueue = OperationQueue()
+        let urlSession = URLSession(configuration: configuration, delegate: self, delegateQueue: operationQueue)
+        
+        guard let url = URL(string: downloadUrl) else { return }
+        let downloadTask = urlSession.downloadTask(with: url)
+        downloadTask.resume()
+    }
+}
+
+extension ViewController: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("Finished download file.")
+    }
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        print(totalBytesWritten, totalBytesExpectedToWrite)
     }
 }
 
