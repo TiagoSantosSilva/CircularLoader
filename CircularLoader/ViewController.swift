@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let circularPath = UIBezierPath(arcCenter: view.center, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+        let circularPath = UIBezierPath(arcCenter: view.center, radius: 100, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
         
         createProgressCircle(circularPath)
     }
@@ -23,7 +23,9 @@ class ViewController: UIViewController {
     private func createProgressCircle(_ circularPath: UIBezierPath) {
         shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1)
+        shapeLayer.fillColor = UIColor.clear.cgColor
         shapeLayer.lineWidth = 10
+        shapeLayer.lineCap = kCALineCapRound
         shapeLayer.strokeEnd = 0
         
         view.layer.addSublayer(shapeLayer)
@@ -36,6 +38,9 @@ class ViewController: UIViewController {
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
         basicAnimation.toValue = 1
         basicAnimation.duration = 2
+        
+        basicAnimation.fillMode = kCAFillModeForwards
+        basicAnimation.isRemovedOnCompletion = false
         
         shapeLayer.add(basicAnimation, forKey: "urSoBasic")
     }
