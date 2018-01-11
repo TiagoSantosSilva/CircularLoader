@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     
     var progressShapeLayer: CAShapeLayer!
     var trackLayer: CAShapeLayer!
+    var pulsatingLayer: CAShapeLayer!
     
     let percentageLabel: UILabel = {
         let label = UILabel()
@@ -25,23 +26,46 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // view.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+        createShapeLayers()
+        configurePercentageLabel()
+    }
+    
+    fileprivate func configurePercentageLabel() {
         view.addSubview(percentageLabel)
+        
         percentageLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         percentageLabel.center = view.center
-        
+    }
+    
+    fileprivate func createShapeLayers() {
         let circularPath = UIBezierPath(arcCenter: .zero, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
-        trackLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1), strokeEnd: 1)
-        progressShapeLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1), strokeEnd: 0)
+        trackLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1), fillColor: UIColor.clear.cgColor, strokeEnd: 1)
+        pulsatingLayer = createProgressCircle(circularPath, strokeColor: UIColor.clear.cgColor, fillColor: #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1), strokeEnd: 1)
+        progressShapeLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1), fillColor: UIColor.clear.cgColor, strokeEnd: 0)
         
+        animatePulsatingLayer()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
     
-    private func createProgressCircle(_ circularPath: UIBezierPath, strokeColor: CGColor, strokeEnd: CGFloat) -> CAShapeLayer {
+    func animatePulsatingLayer() {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        
+        animation.toValue = 1.5
+        animation.duration = 0.8
+        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        animation.autoreverses = true
+        animation.repeatCount = Float.infinity
+        
+        pulsatingLayer.add(animation, forKey: "pulsing")
+    }
+    
+    fileprivate func createProgressCircle(_ circularPath: UIBezierPath, strokeColor: CGColor, fillColor: CGColor, strokeEnd: CGFloat) -> CAShapeLayer {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = strokeColor
-        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.fillColor = fillColor
         shapeLayer.lineWidth = 10
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.strokeEnd = strokeEnd
