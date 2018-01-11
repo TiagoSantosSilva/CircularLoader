@@ -15,8 +15,19 @@ class ViewController: UIViewController {
     var progressShapeLayer: CAShapeLayer!
     var trackLayer: CAShapeLayer!
     
+    let percentageLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Start"
+        label.textAlignment = .center
+        label.font = UIFont.boldSystemFont(ofSize: 32)
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(percentageLabel)
+        percentageLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        percentageLabel.center = view.center
         
         let circularPath = UIBezierPath(arcCenter: .zero, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
@@ -72,6 +83,7 @@ extension ViewController: URLSessionDownloadDelegate {
         let downloadPercentage = CGFloat(totalBytesWritten) / CGFloat(totalBytesExpectedToWrite)
         
         DispatchQueue.main.async {
+            self.percentageLabel.text = "\(Int(downloadPercentage * 100))%"
             self.progressShapeLayer.strokeEnd = downloadPercentage
         }
         
