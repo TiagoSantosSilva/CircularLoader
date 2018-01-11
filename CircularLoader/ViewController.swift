@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let circularPath = UIBezierPath(arcCenter: view.center, radius: 100, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
+        let circularPath = UIBezierPath(arcCenter: .zero, radius: 100, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
         trackLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1), strokeEnd: 1)
         progressShapeLayer = createProgressCircle(circularPath, strokeColor: #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1), strokeEnd: 0)
@@ -34,6 +34,8 @@ class ViewController: UIViewController {
         shapeLayer.lineWidth = 10
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.strokeEnd = strokeEnd
+        shapeLayer.position = view.center
+        shapeLayer.transform = CATransform3DMakeRotation(-CGFloat.pi / 2, 0, 0, 1)
         
         view.layer.addSublayer(shapeLayer)
         return shapeLayer
